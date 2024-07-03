@@ -1,5 +1,8 @@
 #define Five_Eight_Zero // For Minetest 5.8.0
 //#define Five_Nine_Zero // For Minetest 5.9.0
+#define TRANSLUCENT_FOLIAGE
+#define LIQUID_REFLECTIONS 
+#define TINTED_SUNLIGHT
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT)
 #define MATERIAL_WAVING_LIQUID 1
@@ -533,19 +536,26 @@ void main(void)
 		float tint_factor = min(abs(v_LightDirection.y) * 3., 1.);
 		float tint_strength = clamp((dayLight.r - 0.1) * 5., 0., 1.) * (1. - min(shadow_uncorrected, 1.) * 0.125) * min(f_adj_shadow_strength * 2., 1.);
 		vec3 sun_tint = vec3(1., pow(tint_factor, 0.75), pow(tint_factor, 2.)) * (tint_strength * 0.9) + vec3(tint_factor * 0.8 + 0.5) * (1. - tint_strength * 0.9);
+		#ifdef TINTED_SUNLIGHT
 		vec3 tinted_dayLight = dayLight * sun_tint;
+		vec3 sunlight_tint = sun_tint;
+		#else
+		vec3 tinted_dayLight = dayLight;
+		vec3 sunlight_tint = dayLight;
+		#endif
 	
 
 		// calculate fragment color from components:
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light
-				(1.0 - adjusted_night_ratio) * sun_tint * ( // natural light
+				(1.0 - adjusted_night_ratio) * sunlight_tint * ( // natural light
 						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color) * (1.0 - shadow_tint)) +  // filtered texture color
 						tinted_dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 
 		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 4.0);
 
 #if (defined(MATERIAL_WAVING_LIQUID))
+	#ifdef LIQUID_REFLECTIONS 
 		vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
 		float off = animationTimer * WATER_WAVE_SPEED * 10.0;
 		wavePos.x /= WATER_WAVE_LENGTH * 3.0;
@@ -557,20 +567,21 @@ void main(void)
 		reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
 		float fresnel_factor = dot(fNormal, viewVec);
 
-		float brightness_factor = 1.0 - adjusted_night_ratio;
+		float brightness_factor = 0.5 - adjusted_night_ratio;
 
 		// A little trig hack. We go from the dot product of viewVec and normal to the dot product of viewVec and tangent to apply a fresnel effect.
 		fresnel_factor = clamp(pow(1.0 - fresnel_factor * fresnel_factor, 8.0), 0.0, 1.0);
 		col.rgb *= 0.5;
-		vec3 reflection_color = mix(vec3(max(fogColor.r, max(fogColor.g, fogColor.b))), fogColor.rgb, f_shadow_strength + tinted_dayLight);// + tinted_dayLight);
+		vec3 reflection_color = mix(vec3(max(fogColor.r, max(fogColor.g, fogColor.b))), fogColor.rgb, f_shadow_strength + tinted_dayLight);
 
 		// Sky reflection
 		col.rgb += reflection_color * pow(fresnel_factor, 2.0) * 0.5 * brightness_factor;
-		vec3 water_reflect_color = 12.0 * tinted_dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
+		vec3 water_reflect_color = 12.0 * sunlight_tint * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
 
 		// This line exists to prevent ridiculously bright reflection colors.
 		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.5, 1.0, 400.0);
 		col.rgb += water_reflect_color * f_adj_shadow_strength * brightness_factor;
+	#endif
 #endif
 
 #if (defined(ENABLE_NODE_REFLECTIONS) && !defined(MATERIAL_WAVING_LIQUID))
@@ -591,9 +602,11 @@ void main(void)
 		}
 #endif
 
-#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES) && defined(ENABLE_TRANSLUCENT_FOLIAGE)
+#if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES)
+#ifdef TRANSLUCENT_FOLIAGE
 		// Simulate translucent foliage.
-		col.rgb += 3.0 * dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
+		col.rgb += 3.0 * tinted_dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
+#endif
 #endif
 	}
 #endif
