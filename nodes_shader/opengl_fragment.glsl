@@ -1,3 +1,6 @@
+#define Five_Eight_Zero // For Minetest 5.8.0
+//#define Five_Nine_Zero // For Minetest 5.9.0
+
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT)
 #define MATERIAL_WAVING_LIQUID 1
 #define MATERIAL_LIQUID 1
@@ -526,16 +529,21 @@ void main(void)
 		}
 
 		shadow_int *= f_adj_shadow_strength;
+		// Part of the experimental function//
+		float tint_factor = min(abs(v_LightDirection.y) * 3., 1.);
+		float tint_strength = clamp((dayLight.r - 0.1) * 5., 0., 1.) * (1. - min(shadow_uncorrected, 1.) * 0.125) * min(f_adj_shadow_strength * 2., 1.);
+		vec3 sun_tint = vec3(1., pow(tint_factor, 0.75), pow(tint_factor, 2.)) * (tint_strength * 0.9) + vec3(tint_factor * 0.8 + 0.5) * (1. - tint_strength * 0.9);
+		vec3 tinted_dayLight = dayLight * sun_tint;
+	
 
 		// calculate fragment color from components:
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light
-				(1.0 - adjusted_night_ratio) * ( // natural light
+				(1.0 - adjusted_night_ratio) * sun_tint * ( // natural light
 						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color) * (1.0 - shadow_tint)) +  // filtered texture color
-						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
+						tinted_dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 
-
-		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 2.0);
+		vec3 reflect_ray = -normalize(v_LightDirection - fNormal * dot(v_LightDirection, fNormal) * 4.0);
 
 #if (defined(MATERIAL_WAVING_LIQUID))
 		vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
@@ -554,11 +562,11 @@ void main(void)
 		// A little trig hack. We go from the dot product of viewVec and normal to the dot product of viewVec and tangent to apply a fresnel effect.
 		fresnel_factor = clamp(pow(1.0 - fresnel_factor * fresnel_factor, 8.0), 0.0, 1.0);
 		col.rgb *= 0.5;
-		vec3 reflection_color = mix(vec3(max(fogColor.r, max(fogColor.g, fogColor.b))), fogColor.rgb, f_shadow_strength);
+		vec3 reflection_color = mix(vec3(max(fogColor.r, max(fogColor.g, fogColor.b))), fogColor.rgb, f_shadow_strength + tinted_dayLight);// + tinted_dayLight);
 
 		// Sky reflection
 		col.rgb += reflection_color * pow(fresnel_factor, 2.0) * 0.5 * brightness_factor;
-		vec3 water_reflect_color = 12.0 * dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
+		vec3 water_reflect_color = 12.0 * tinted_dayLight * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
 
 		// This line exists to prevent ridiculously bright reflection colors.
 		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.5, 1.0, 400.0);
@@ -577,7 +585,7 @@ void main(void)
 		// Apply reflections to blocks.
 		if (dot(v_LightDirection, vNormal) < 0.0) {
 			col.rgb += 
-				1.5 * dayLight * f_adj_shadow_strength * REFLECTION_INTENSITY * (1.0 - nightRatio) *
+				1.5 * tinted_dayLight * f_adj_shadow_strength * REFLECTION_INTENSITY * (1.0 - nightRatio) *
 				pow(max(dot(reflect_ray, viewVec), 0.0), 4.0) * pow(1.0 - abs(dot(viewVec, fNormal)), 5.0) * 
 				(1.0 - shadow_uncorrected) * (1.0 - base.r);
 		}
@@ -599,12 +607,20 @@ void main(void)
 	// As additions usually come for free following a multiplication, the new formula
 	// should be more efficient as well.
 	// Note: clarity = (1 - fogginess)
+#ifdef Five_Eight_Zero
 	float clarity = clamp(fogShadingParameter
-		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
-	if (fogColorMax < 0.0000001) fogColorMax = 1.0;
-	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2.0 * clarity)), col, clarity);
+		+ fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
+	col = mix(fogColor, col, clarity);
 	col = vec4(col.rgb, base.a);
 
 	gl_FragData[0] = col;
+#endif
+#ifdef Five_Nine_Zero
+	float clarity = clamp(fogShadingParameter
+		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
+	col = mix(fogColor, col, clarity);
+	col = vec4(col.rgb, base.a);
+
+	gl_FragData[0] = col;
+#endif
 }

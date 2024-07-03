@@ -33,7 +33,8 @@ centroid varying vec2 varTexCoord;
 varying highp vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
-uniform vec3 artificialLight;
+//uniform vec3 artificialLight;
+const vec3 artificialLight = vec3(1.34, 1.04, 0.94);
 varying float vIDiff;
 const float e = 2.718281828459;
 const float BS = 10.0;

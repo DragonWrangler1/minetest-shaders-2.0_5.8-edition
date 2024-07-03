@@ -1,3 +1,6 @@
+#define Five_Eight_Zero
+//#define Five_Nine_Zero
+
 uniform sampler2D baseTexture;
 
 uniform vec3 dayLight;
@@ -447,12 +450,20 @@ void main(void)
 	// As additions usually come for free following a multiplication, the new formula
 	// should be more efficient as well.
 	// Note: clarity = (1 - fogginess)
+#ifdef Five_Eight_Zero
 	float clarity = clamp(fogShadingParameter
-		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-	float fogColorMax = max(max(fogColor.r, fogColor.g), fogColor.b);
-	if (fogColorMax < 0.0000001) fogColorMax = 1.0;
-	col = mix(fogColor * pow(fogColor / fogColorMax, vec4(2.0 * clarity)), col, clarity);
+		+ fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
+	col = mix(fogColor, col, clarity);
 	col = vec4(col.rgb, base.a);
 
 	gl_FragData[0] = col;
+#endif
+#ifdef Five_Nine_Zero
+	float clarity = clamp(fogShadingParameter
+		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
+	col = mix(fogColor, col, clarity);
+	col = vec4(col.rgb, base.a);
+
+	gl_FragData[0] = col;
+#endif
 }
