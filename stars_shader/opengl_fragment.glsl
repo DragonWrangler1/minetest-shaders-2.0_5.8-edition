@@ -1,4 +1,4 @@
-#define FIREWORKS
+//#define FIREWORKS
 
 uniform lowp vec4 emissiveColor;  // Emissive color uniform
 uniform float time;               // Time uniform
