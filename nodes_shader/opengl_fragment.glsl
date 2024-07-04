@@ -3,6 +3,7 @@
 #define TRANSLUCENT_FOLIAGE
 #define LIQUID_REFLECTIONS 
 #define TINTED_SUNLIGHT
+#define ENABLE_NODE_REFLECTIONS
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT)
 #define MATERIAL_WAVING_LIQUID 1
@@ -556,7 +557,7 @@ void main(void)
 
 #if (defined(MATERIAL_WAVING_LIQUID))
 	#ifdef LIQUID_REFLECTIONS 
-		vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
+	 vec3 wavePos = worldPosition * vec3(2.0, 0.0, 2.0);
 		float off = animationTimer * WATER_WAVE_SPEED * 10.0;
 		wavePos.x /= WATER_WAVE_LENGTH * 3.0;
 		wavePos.z /= WATER_WAVE_LENGTH * 2.0;
@@ -581,10 +582,15 @@ void main(void)
 		// This line exists to prevent ridiculously bright reflection colors.
 		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.5, 1.0, 400.0);
 		col.rgb += water_reflect_color * f_adj_shadow_strength * brightness_factor;
+		
+
 	#endif
 #endif
 
-#if (defined(ENABLE_NODE_REFLECTIONS) && !defined(MATERIAL_WAVING_LIQUID))
+//#if (defined(ENABLE_NODE_REFLECTIONS) && !defined(MATERIAL_WAVING_LIQUID))
+#ifdef LIQUID_REFLECTIONS
+#else
+#ifdef ENABLE_NODE_REFLECTIONS
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES)
 #define REFLECTION_INTENSITY 2.0
@@ -606,6 +612,15 @@ void main(void)
 #ifdef TRANSLUCENT_FOLIAGE
 		// Simulate translucent foliage.
 		col.rgb += 3.0 * tinted_dayLight * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * f_adj_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
+#endif
+#endif
+#if (defined(MATERIAL_WAVING_LIQUID))
+#ifdef TRANSLUCENT_FOLIAGE
+			//float water_light_factor = 0.5 - adjusted_night_ratio;
+			//float water_shadow_strength = f_adj_shadow_strength + water_light_factor;
+			float water_shadow_strength = f_adj_shadow_strength;
+			col.rgb += 3.0 * sunlight_tint * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * water_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
+#endif
 #endif
 #endif
 	}
