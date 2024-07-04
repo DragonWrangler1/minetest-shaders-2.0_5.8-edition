@@ -11,7 +11,7 @@ Note. When I say reload your game I mean close the whole application and then re
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Colored_Moon_Reflection.png" />
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Colored_Sun_Reflection.png" />
 
-- and yet again the same shader as above also makes the minimap change colors based on time.
+- and yet again the same shader as above also makes the minimap change colors based on time. It can be disabled by going to minimap_shader/opengl_fragment.glsl and looking for #define TINTED_SUNLIGHT . The fut // in front of the #define. This will disable it.
 
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/COLORED_MINIMAP.png" />
 
