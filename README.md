@@ -4,8 +4,14 @@ Note. When I say reload your game I mean close the whole application and then re
 
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Colored_Artificial_Light.png" />
 
+- Same shader that affects the above also affects mobs.
+<img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Mobs_In_Artificial_Light.png" />
+
  - Shader that adds colored natural light at dawn and dusk. Can be changed by going to nodes_shader/opengl_fragment.glsl and looking for the area that says #define TINTED_SUNLIGHT to disable tinted sunlight simply put // in front of #define. Reload your game and it should have the changes.
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Colored_Lighting_At_Sunrise.png" />
+
+- Same shader that affects the above also affect mobs.
+ <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Mobs_In_Tinted_Sunlight.png" />
 
  - Same shader that affects the above, is also used to make the following colored reflections. To disable the reflections however. Go to nodes_shader/opengl_fragment.glsl and look for the area that says #define LIQUID_REFLECTIONS and put // in front of the #define. Reload your game and it should have the changes.
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Colored_Moon_Reflection.png" />
