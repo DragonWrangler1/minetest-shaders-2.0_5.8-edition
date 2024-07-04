@@ -1,5 +1,6 @@
 #define Five_Eight_Zero
 //#define Five_Nine_Zero
+#define TINTED_SUNLIGHT
 
 uniform sampler2D baseTexture;
 
@@ -431,13 +432,24 @@ void main(void)
 		}
 
 		shadow_int *= f_adj_shadow_strength;
+		float shadow_uncorrected = shadow_int;
+		float tint_factor = min(abs(v_LightDirection.y) * 3., 1.);
+		float tint_strength = clamp((dayLight.r - 0.1) * 5., 0., 1.) * (1. - min(shadow_uncorrected, 1.) * 0.125) * min(f_adj_shadow_strength * 2., 1.);
+		vec3 sun_tint = vec3(1., pow(tint_factor, 0.75), pow(tint_factor, 2.)) * (tint_strength * 0.9) + vec3(tint_factor * 0.8 + 0.5) * (1. - tint_strength * 0.9);
+		#ifdef TINTED_SUNLIGHT
+		vec3 tinted_dayLight = dayLight * sun_tint;
+		vec3 sunlight_tint = sun_tint;
+		#else
+		vec3 tinted_dayLight = dayLight;
+		vec3 sunlight_tint = dayLight;
+		#endif
 
 		// calculate fragment color from components:
 		col.rgb =
 				adjusted_night_ratio * col.rgb + // artificial light
-				(1.0 - adjusted_night_ratio) * ( // natural light
+				(1.0 - adjusted_night_ratio) * sunlight_tint * ( // natural light
 						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color) * (1.0 - shadow_tint)) +  // filtered texture color
-						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
+						tinted_dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	}
 #endif
 

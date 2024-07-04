@@ -587,10 +587,7 @@ void main(void)
 	#endif
 #endif
 
-//#if (defined(ENABLE_NODE_REFLECTIONS) && !defined(MATERIAL_WAVING_LIQUID))
-#ifdef LIQUID_REFLECTIONS
-#else
-#ifdef ENABLE_NODE_REFLECTIONS
+#if (defined(ENABLE_NODE_REFLECTIONS) && !defined(MATERIAL_WAVING_LIQUID))
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES)
 #define REFLECTION_INTENSITY 2.0
@@ -620,7 +617,6 @@ void main(void)
 			//float water_shadow_strength = f_adj_shadow_strength + water_light_factor;
 			float water_shadow_strength = f_adj_shadow_strength;
 			col.rgb += 3.0 * sunlight_tint * base.rgb * normalize(base.rgb * varColor.rgb * varColor.rgb) * water_shadow_strength * pow(max(-dot(v_LightDirection, viewVec), 0.0), 4.0) * max(1.0 - shadow_uncorrected, 0.0);
-#endif
 #endif
 #endif
 	}

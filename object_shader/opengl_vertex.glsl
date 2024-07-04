@@ -1,3 +1,7 @@
+#define WARM_LIGHT
+//#define COOL_LIGHT
+//#define NORMAL_LIGHT
+
 uniform mat4 mWorld;
 uniform vec3 dayLight;
 uniform float animationTimer;
@@ -34,7 +38,15 @@ varying highp vec3 eyeVec;
 varying float nightRatio;
 // Color of the light emitted by the light sources.
 //uniform vec3 artificialLight;
-const vec3 artificialLight = vec3(1.34, 1.04, 0.94);
+#ifdef WARM_LIGHT
+const vec3 artificialLight = vec3(1.2, 0.95, 0.8);
+#endif
+#ifdef COOL_LIGHT
+const vec3 artificialLight = vec3(0.8, 0.95, 1.2);
+#endif
+#ifdef NORMAL_LIGHT
+const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
+#endif
 varying float vIDiff;
 const float e = 2.718281828459;
 const float BS = 10.0;
