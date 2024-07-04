@@ -11,10 +11,21 @@ Note. When I say reload your game I mean close the whole application and then re
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Colored_Moon_Reflection.png" />
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Colored_Sun_Reflection.png" />
 
+- and yet again the same shader as above also makes the minimap change colors based on time.
+
+<img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/COLORED_MINIMAP.png" />
+
 - Stars that are meant to resemble fireworks. You can enable them by going to the stars_shader folder. Then to the opengl_fragment.glsl file then finding //FIREWORKS and removing the // . They are disabled by default.
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Firework_Stars.png" />
 
 - Shader that makes foliage almost translucent by allowing sunlight to go through it. To disable it, go to nodes_shader/opengl_fragment.glsl and look for the area that says #define TRANSLUCENT_FOLIAGE then put // in front of it. Reload your game and it will be disabled.
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/TRANSLUCENT_FOLIAGE.png" />
+
+- Shader that makes foliage the way you see above also makes water translucent.
+<img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/TRANSLUCENT_LIQUID.png" />
+
+
+
+
 
 This repo was largely based off of https://github.com/minetest/minetest/pull/14610
