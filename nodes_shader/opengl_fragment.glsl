@@ -1,6 +1,7 @@
 #define Five_Eight_Zero // For Minetest 5.8.0
 //#define Five_Nine_Zero // For Minetest 5.9.0
 #define TRANSLUCENT_FOLIAGE
+//#define TRANSLUCENT_LIQUID
 #define LIQUID_REFLECTIONS 
 #define TINTED_SUNLIGHT
 #define ENABLE_NODE_REFLECTIONS
@@ -578,7 +579,6 @@ void main(void)
 		// Sky reflection
 		col.rgb += reflection_color * pow(fresnel_factor, 2.0) * 0.5 * brightness_factor;
 		vec3 water_reflect_color = 12.0 * sunlight_tint * fresnel_factor * mtsmoothstep(0.85, 0.9, pow(clamp(dot(reflect_ray, viewVec), 0.0, 1.0), 32.0)) * max(1.0 - shadow_uncorrected, 0.0);
-
 		// This line exists to prevent ridiculously bright reflection colors.
 		water_reflect_color /= clamp(max(water_reflect_color.r, max(water_reflect_color.g, water_reflect_color.b)) * 0.5, 1.0, 400.0);
 		col.rgb += water_reflect_color * f_adj_shadow_strength * brightness_factor;
@@ -612,7 +612,7 @@ void main(void)
 #endif
 #endif
 #if (defined(MATERIAL_WAVING_LIQUID))
-#ifdef TRANSLUCENT_FOLIAGE
+#ifdef TRANSLUCENT_LIQUID
 			//float water_light_factor = 0.5 - adjusted_night_ratio;
 			//float water_shadow_strength = f_adj_shadow_strength + water_light_factor;
 			float water_shadow_strength = f_adj_shadow_strength;
