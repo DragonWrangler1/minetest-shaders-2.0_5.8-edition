@@ -30,8 +30,5 @@ Note. When I say reload your game I mean close the whole application and then re
 - Shader that makes foliage the way you see above also makes water translucent, except it's controlled by TRANSLUCENT_LIQUID.
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/TRANSLUCENT_LIQUID.png" />
 
-
-
-
-
 This repo was largely based off of https://github.com/minetest/minetest/pull/14610
+But with some major modifications.
