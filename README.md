@@ -27,7 +27,7 @@ Note. When I say reload your game I mean close the whole application and then re
 - Shader that makes foliage almost translucent by allowing sunlight to go through it. To disable it, go to nodes_shader/opengl_fragment.glsl and look for the area that says #define TRANSLUCENT_FOLIAGE then put // in front of it. Reload your game and it will be disabled.
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/TRANSLUCENT_FOLIAGE.png" />
 
-- Shader that makes foliage the way you see above also makes water translucent.
+- Shader that makes foliage the way you see above also makes water translucent, except it's controlled by TRANSLUCENT_LIQUID.
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/TRANSLUCENT_LIQUID.png" />
 
 
