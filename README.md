@@ -1,5 +1,7 @@
 Note. When I say reload your game I mean close the whole application and then reopen it and open a world. Doing this refreshes the shader, if you don't close your game then it won't refresh.
 
+Also when using this pack, try to keep shaders at low, and keep the pixels at between 256-512.
+
 - Colored Artificial Light. Can be changed by going to nodes_shader/opengl_vertex.glsl and finding the part near the beginning of the file that has #define. whichever colored light you want. remove the // on that color and add // to the front of the previous color so that the file will ignore the old definition. Warm color by default.
 
 <img src="https://raw.githubusercontent.com/DragonWrangler1/minetest-5.8.0-shaderpack/main/Colored_Artificial_Light.png" />
