@@ -1,3 +1,5 @@
+To enable this shader, first download this, and decompress it, place it in any folder (doesn't matter which one) then go to minetest advanced settings, and set the shaderpack to the folder that contains all the shaders in here, so the minetest-shaders-2.0_t.8-edition folder most likely. After that save it. Then Fully Close minetest. Reopen and it should be enabled.
+
 Note. When I say reload your game I mean close the whole application and then reopen it and open a world. Doing this refreshes the shader, if you don't close your game then it won't refresh.
 
 Also when using this pack, try to keep shaders at low, and keep the pixels at between 256-512.
